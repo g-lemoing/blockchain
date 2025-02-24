@@ -1,4 +1,7 @@
+/*
 package com.hackathon.blockchain.service;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 public class BlockchainService {
 
@@ -26,4 +29,4 @@ public class BlockchainService {
         System.out.println("✅ Blockchain is valid");
         return true;
     }
-}
+}*/

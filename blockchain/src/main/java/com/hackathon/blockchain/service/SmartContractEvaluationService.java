@@ -1,10 +1,11 @@
-package com.hackathon.blockchain.service;
+/*package com.hackathon.blockchain.service;
 
 import com.hackathon.blockchain.model.SmartContract;
 import com.hackathon.blockchain.model.Transaction;
 import com.hackathon.blockchain.repository.SmartContractRepository;
 import com.hackathon.blockchain.repository.TransactionRepository;
 import com.hackathon.blockchain.utils.SignatureUtil;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -31,12 +32,12 @@ public class SmartContractEvaluationService {
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
         this.walletKeyService = walletKeyService;
-    }
+    }*/
     
     /**
      * Verifica la firma digital del contrato usando la clave pública del emisor.
      */
-    public boolean verifyContractSignature(SmartContract contract) {
+/*    public boolean verifyContractSignature(SmartContract contract) {
         try {
             PublicKey issuerPublicKey = walletKeyService.getPublicKeyForWallet(contract.getIssuerWalletId());
             if (issuerPublicKey == null) {
@@ -52,7 +53,7 @@ public class SmartContractEvaluationService {
             e.printStackTrace();
             return false;
         }
-    }
+    }*/
     
     /**
      * Evalúa todos los smart contracts activos sobre las transacciones pendientes.
@@ -61,7 +62,7 @@ public class SmartContractEvaluationService {
      * - Para "CANCEL_TRANSACTION", se marca la transacción como "CANCELED".
      * - (Si hubiera otras acciones, se podrían implementar aquí).
      */
-    @Transactional
+/*    @Transactional
     public void evaluateSmartContracts() {
         List<SmartContract> contracts = smartContractRepository.findAll(); // O filtrar por "ACTIVE"
         List<Transaction> pendingTxs = transactionRepository.findByStatus("PENDING");
@@ -85,7 +86,7 @@ public class SmartContractEvaluationService {
                 }
             }
         }
-    }
+    }*/
 
     // UNA UNICA CONDICION
     // /**
@@ -129,4 +130,4 @@ public class SmartContractEvaluationService {
     //         }
     //     }
     // }
-}
+//}

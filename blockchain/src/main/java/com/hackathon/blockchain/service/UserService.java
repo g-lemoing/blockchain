@@ -1,7 +1,9 @@
+/*
 package com.hackathon.blockchain.service;
 
 import com.hackathon.blockchain.model.User;
 import com.hackathon.blockchain.repository.UserRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,4 +40,4 @@ public class UserService {
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-}
+}*/

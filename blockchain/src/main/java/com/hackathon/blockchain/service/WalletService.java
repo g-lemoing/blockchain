@@ -1,4 +1,4 @@
-package com.hackathon.blockchain.service;
+/*package com.hackathon.blockchain.service;
 
 import com.hackathon.blockchain.model.Asset;
 import com.hackathon.blockchain.model.Transaction;
@@ -8,6 +8,7 @@ import com.hackathon.blockchain.repository.TransactionRepository;
 import com.hackathon.blockchain.repository.WalletRepository;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,14 +66,14 @@ public class WalletService {
                 liquidityWallet.getAssets().add(asset);
             }
         }
-    }
+    }*/
 
     /*
      * Los usuarios deben comprar primero USDT para poder cambiar por tokens
      * El dinero fiat no vale para comprar tokens
      * Cuando se intercambia USDT por cualquier moneda, no se añade USDT a los assets de otras monedas
      */
-    @Transactional
+/*    @Transactional
     public String buyAsset(Long userId, String symbol, double quantity) {
         Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
         Optional<Wallet> liquidityWalletOpt = walletRepository.findByAddress("LP-" + symbol);
@@ -126,13 +127,13 @@ public class WalletService {
         recordTransaction(liquidityWallet, userWallet, symbol, quantity, price, "BUY");
     
         return "✅ Asset purchased successfully!";
-    }
+    }*/
 
     /*
      * La venta siempre se hace por USDT
      * Los usuarios después pueden cambiar USDT por la moneda fiat
      */
-    @Transactional
+/*    @Transactional
     public String sellAsset(Long userId, String symbol, double quantity) {
         Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
         Optional<Wallet> liquidityWalletOpt = walletRepository.findByAddress("LP-" + symbol);
@@ -192,12 +193,12 @@ public class WalletService {
         walletRepository.save(liquidityWallet);
     
         return "✅ Asset sold successfully!";
-    }
+    }*/
 
     /*
      * Esta versión ya no almacena purchasePrice en Assets
      */
-    private void updateWalletAssets(Wallet wallet, String assetSymbol, double amount) {
+/*    private void updateWalletAssets(Wallet wallet, String assetSymbol, double amount) {
         Optional<Asset> assetOpt = wallet.getAssets().stream()
                 .filter(asset -> asset.getSymbol().equalsIgnoreCase(assetSymbol))
                 .findFirst();
@@ -325,13 +326,14 @@ public class WalletService {
         walletInfo.put("assets", assetsMap);
     
         return walletInfo;
-    }
+    }*/
     
     /**
      * Devuelve un mapa con dos listas de transacciones:
      * - "sent": transacciones enviadas (donde la wallet es remitente)
      * - "received": transacciones recibidas (donde la wallet es destinataria)
      */
+/*
     public Map<String, List<Transaction>> getWalletTransactions(Long walletId) {
         Optional<Wallet> walletOpt = walletRepository.findById(walletId);
         if (walletOpt.isEmpty()) {
@@ -378,4 +380,4 @@ public class WalletService {
         walletRepository.save(feeWallet);
         return "Fee wallet created successfully with address: " + feeWalletAddress;
     }
-}
+}*/

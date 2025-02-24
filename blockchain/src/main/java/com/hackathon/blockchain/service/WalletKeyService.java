@@ -1,9 +1,11 @@
+/*
 package com.hackathon.blockchain.service;
 
 import com.hackathon.blockchain.model.Wallet;
 import com.hackathon.blockchain.model.WalletKey;
 import com.hackathon.blockchain.repository.WalletKeyRepository;
 import com.hackathon.blockchain.utils.PemUtil;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +23,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 @Service
+@ConditionalOnMissingBean
 public class WalletKeyService {
 
     private static final String KEYS_FOLDER = "keys";
@@ -43,12 +46,13 @@ public class WalletKeyService {
     public Optional<WalletKey> getKeysByWalletId(Long walletId) {
         return walletKeyRepository.findByWalletId(walletId);
     }
+*/
 
     /**
      * Genera un par de claves RSA de 2048 bits, las convierte a PEM y las almacena en archivos,
      * además de guardarlas en la base de datos vinculadas a la wallet.
      */
-    public WalletKey generateAndStoreKeys(Wallet wallet) throws NoSuchAlgorithmException, IOException {
+/*    public WalletKey generateAndStoreKeys(Wallet wallet) throws NoSuchAlgorithmException, IOException {
         // Generar el par de claves
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(2048);
@@ -98,11 +102,12 @@ public class WalletKeyService {
             }
         }
         return null;
-    }
+    }*/
 
     /**
      * Devuelve la clave privada asociada a la wallet.
      */
+/*
     public PrivateKey getPrivateKeyForWallet(Long walletId) {
         Optional<WalletKey> keyOpt = walletKeyRepository.findByWalletId(walletId);
         if (keyOpt.isPresent()) {
@@ -123,4 +128,4 @@ public class WalletKeyService {
         }
         return null;
     }
-}
+}*/
