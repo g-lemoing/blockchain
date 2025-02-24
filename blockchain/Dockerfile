@@ -1,18 +1,24 @@
-FROM maven:3.9.9-eclipse-temurin-21 as build
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
 COPY pom.xml ./
+RUN mvn dependency:go-offline
+
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+#RUN mvn clean package -DskipTests
 
-FROM openjdk:21-jdk-slim
+FROM maven:3.9.9-eclipse-temurin-21
 
 WORKDIR /app
 
-COPY --from=build /app/target/blockchain-0.0.1-SNAPSHOT.jar /app/blockchain-0.0.1-SNAPSHOT.jar
+COPY --from=build /app /app
 
 EXPOSE 3000
 
-ENTRYPOINT ["java", "-jar", "/app/blockchain-0.0.1-SNAPSHOT.jar"]
+# Agregar healthcheck
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s \
+    CMD curl -f http://localhost:3000/actuator/health || exit 1
+
+ENTRYPOINT ["mvn", "spring-boot:run"]
