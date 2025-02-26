@@ -1,50 +1,47 @@
 package com.hackathon.blockchain.controller;
 
 import com.hackathon.blockchain.dto.CheckUserDto;
+import com.hackathon.blockchain.dto.LoginResponseDto;
 import com.hackathon.blockchain.dto.LoginUserDto;
 import com.hackathon.blockchain.dto.RegisterUserDto;
 import com.hackathon.blockchain.model.User;
+import com.hackathon.blockchain.service.AuthService;
 import com.hackathon.blockchain.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
+    private final AuthService authService;
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
+    public AuthController(AuthService authService, UserService userService) {
+        this.authService = authService;
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterUserDto userDto, HttpServletRequest request){
+    public ResponseEntity<String> register(@RequestBody RegisterUserDto userDto, HttpServletRequest request,
+                                HttpServletResponse response){
         User registeredUser = userService.register(
                 userDto.getUsername(), userDto.getEmail(), userDto.getPassword());
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword());
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext());
+        LoginUserDto loginUserDto = new LoginUserDto(userDto.getUsername(), userDto.getPassword());
+        LoginResponseDto<Boolean> authResponse = authService.login(loginUserDto, request, response);
         return ResponseEntity.ok("{\"message\": \"User registered and logged in successfully\"}");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginUserDto userDto, HttpServletRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+    public ResponseEntity<String> login(@RequestBody LoginUserDto userDto, HttpServletRequest request,
+                                                               HttpServletResponse response) {
 
-        return ResponseEntity.ok("{\"message\": \"User logged in successfully\"}");
+        LoginResponseDto<Boolean> authResponse = authService.login(userDto, request, response);
+        return ResponseEntity.status(authResponse.httpStatus()).body("{\"message\": " + authResponse.message() + "}");
     }
 
     @GetMapping("/check-session")
