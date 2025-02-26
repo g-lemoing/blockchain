@@ -21,4 +21,6 @@ EXPOSE 3000
 HEALTHCHECK --interval=10s --timeout=5s --start-period=10s \
     CMD curl -f http://localhost:3000/actuator/health || exit 1
 
+ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+
 ENTRYPOINT ["mvn", "spring-boot:run"]
