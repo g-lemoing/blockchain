@@ -1,5 +1,6 @@
 package com.hackathon.blockchain.controller;
 
+import com.hackathon.blockchain.dto.CheckUserDto;
 import com.hackathon.blockchain.dto.LoginUserDto;
 import com.hackathon.blockchain.dto.RegisterUserDto;
 import com.hackathon.blockchain.model.User;
@@ -44,6 +45,13 @@ public class AuthController {
         request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
         return ResponseEntity.ok("{\"message\": \"User logged in successfully\"}");
+    }
+
+    @GetMapping("/check-session")
+    public ResponseEntity<CheckUserDto> checkSession(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        CheckUserDto checkUserDto = new CheckUserDto(user.getUsername());
+        return ResponseEntity.ok(checkUserDto);
     }
 }
 
