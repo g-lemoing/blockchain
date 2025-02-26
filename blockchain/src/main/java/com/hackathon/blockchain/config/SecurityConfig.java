@@ -40,6 +40,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(
+                        ((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"Unauthorized - No active session\"}");
+                        })
+                ))
                 .logout(logout -> logout.logoutUrl("/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
