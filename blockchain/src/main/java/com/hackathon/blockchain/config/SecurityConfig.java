@@ -38,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final String[] WHITE_LIST_URL = {"/actuator/**", "/v3/api-docs/**", "/swagger-resources",
                 "/swagger-resources/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/register",
-                "/auth/login", "/auth/logout", "/openapi.yaml"};
+                "/auth/login", "/auth/logout", "/market/**", "/openapi.yaml"};
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
