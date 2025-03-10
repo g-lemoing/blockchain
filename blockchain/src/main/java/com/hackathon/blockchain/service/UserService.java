@@ -6,6 +6,7 @@ import com.hackathon.blockchain.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,5 +45,11 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public User findAuthenticatedUser(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        if(user == null) throw new UserNotFoundException("");
+        return user;
     }
 }
