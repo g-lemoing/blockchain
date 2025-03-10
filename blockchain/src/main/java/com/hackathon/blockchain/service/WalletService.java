@@ -1,14 +1,13 @@
-/*package com.hackathon.blockchain.service;
+package com.hackathon.blockchain.service;
 
 import com.hackathon.blockchain.model.Asset;
-import com.hackathon.blockchain.model.Transaction;
+//import com.hackathon.blockchain.model.Transaction;
 import com.hackathon.blockchain.model.User;
 import com.hackathon.blockchain.model.Wallet;
-import com.hackathon.blockchain.repository.TransactionRepository;
+//import com.hackathon.blockchain.repository.TransactionRepository;
 import com.hackathon.blockchain.repository.WalletRepository;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 public class WalletService {
 
     private final WalletRepository walletRepository;
-    private final TransactionRepository transactionRepository;
+//    private final TransactionRepository transactionRepository;
     private final MarketDataService marketDataService;
 
     public WalletService(WalletRepository walletRepository, 
-                         TransactionRepository transactionRepository, 
-                         MarketDataService marketDataService,
-                         BlockchainService blockchainService) {
+//                         TransactionRepository transactionRepository,
+                         MarketDataService marketDataService
+//            ,
+//                         BlockchainService blockchainService
+    ) {
         this.walletRepository = walletRepository;
-        this.transactionRepository = transactionRepository;
+//        this.transactionRepository = transactionRepository;
         this.marketDataService = marketDataService;
     }
 
@@ -66,7 +67,7 @@ public class WalletService {
                 liquidityWallet.getAssets().add(asset);
             }
         }
-    }*/
+    }
 
     /*
      * Los usuarios deben comprar primero USDT para poder cambiar por tokens
@@ -127,13 +128,13 @@ public class WalletService {
         recordTransaction(liquidityWallet, userWallet, symbol, quantity, price, "BUY");
     
         return "✅ Asset purchased successfully!";
-    }*/
+    }
 
-    /*
+
      * La venta siempre se hace por USDT
      * Los usuarios después pueden cambiar USDT por la moneda fiat
-     */
-/*    @Transactional
+
+    @Transactional
     public String sellAsset(Long userId, String symbol, double quantity) {
         Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
         Optional<Wallet> liquidityWalletOpt = walletRepository.findByAddress("LP-" + symbol);
@@ -193,12 +194,12 @@ public class WalletService {
         walletRepository.save(liquidityWallet);
     
         return "✅ Asset sold successfully!";
-    }*/
+    }
 
-    /*
+
      * Esta versión ya no almacena purchasePrice en Assets
-     */
-/*    private void updateWalletAssets(Wallet wallet, String assetSymbol, double amount) {
+
+    private void updateWalletAssets(Wallet wallet, String assetSymbol, double amount) {
         Optional<Asset> assetOpt = wallet.getAssets().stream()
                 .filter(asset -> asset.getSymbol().equalsIgnoreCase(assetSymbol))
                 .findFirst();
@@ -234,7 +235,7 @@ public class WalletService {
         );
         
         transactionRepository.save(transaction);
-    }
+    }*/
     
         public String createWalletForUser(User user) {
         Optional<Wallet> existingWallet = walletRepository.findByUserId(user.getId());
@@ -245,7 +246,7 @@ public class WalletService {
         Wallet wallet = new Wallet();
         wallet.setUser(user);
         wallet.setAddress(generateWalletAddress());
-        wallet.setBalance(10000.0);
+        wallet.setBalance(100000.0);
         wallet.setAccountStatus("ACTIVE");
 
         walletRepository.save(wallet);
@@ -258,7 +259,7 @@ public class WalletService {
     }
 
 
-    // Ejecuto esta función para tener patrimonios de carteras actualizados continuamente y que no contenga valores estáticos
+/*    // Ejecuto esta función para tener patrimonios de carteras actualizados continuamente y que no contenga valores estáticos
     @Scheduled(fixedRate = 30000) // Se ejecuta cada 30 segundos
     @Transactional
     public void updateWalletBalancesScheduled() {
@@ -326,14 +327,13 @@ public class WalletService {
         walletInfo.put("assets", assetsMap);
     
         return walletInfo;
-    }*/
+    }
     
-    /**
+    *
      * Devuelve un mapa con dos listas de transacciones:
      * - "sent": transacciones enviadas (donde la wallet es remitente)
      * - "received": transacciones recibidas (donde la wallet es destinataria)
-     */
-/*
+
     public Map<String, List<Transaction>> getWalletTransactions(Long walletId) {
         Optional<Wallet> walletOpt = walletRepository.findById(walletId);
         if (walletOpt.isEmpty()) {
@@ -379,5 +379,5 @@ public class WalletService {
         // Al no estar asociada a un usuario, se deja user en null
         walletRepository.save(feeWallet);
         return "Fee wallet created successfully with address: " + feeWalletAddress;
-    }
-}*/
+    }*/
+}
