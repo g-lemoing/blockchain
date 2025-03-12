@@ -3,9 +3,6 @@ package com.hackathon.blockchain.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.blockchain.exception.AssetNotFoundException;
-import com.hackathon.blockchain.model.Asset;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,15 +27,20 @@ public class MarketDataService {
     }
 
     public String getMarketPrice(String symbol) throws IOException, InterruptedException {
-        String response = getMarketPrices();
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Double> priceMap = objectMapper.readValue(response,
-                    new TypeReference<Map<String, Double>>() {});
-            double price = priceMap.get(symbol.toUpperCase());
-            return "{\"message\": \"Current price of " + symbol + ": $" + price + "\"}";
-        } catch (Exception e) {
+        double assetPrice = fetchLivePriceForAsset(symbol);
+        return "{\"message\": \"Current price of " + symbol + ": $" + assetPrice + "\"}";
+    }
+
+    public double fetchLivePriceForAsset(String symbol) throws IOException, InterruptedException {
+        if(fetchLiveMarketPrices().get(symbol.toUpperCase()) == null)
             throw new AssetNotFoundException(symbol);
-        }
+        return fetchLiveMarketPrices().get(symbol.toUpperCase());
+    }
+
+    public Map<String, Double> fetchLiveMarketPrices() throws IOException, InterruptedException {
+        String response = getMarketPrices();
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(response,
+                new TypeReference<Map<String, Double>>() {});
     }
 }
