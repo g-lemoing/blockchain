@@ -1,23 +1,21 @@
 package com.hackathon.blockchain.service;
 
-import com.hackathon.blockchain.model.Asset;
-//import com.hackathon.blockchain.model.Transaction;
-import com.hackathon.blockchain.model.User;
-import com.hackathon.blockchain.model.Wallet;
-//import com.hackathon.blockchain.repository.TransactionRepository;
+import com.hackathon.blockchain.exception.TransactionBlockedException;
+import com.hackathon.blockchain.model.*;
+import com.hackathon.blockchain.repository.SmartContractRepository;
+import com.hackathon.blockchain.repository.TransactionRepository;
 import com.hackathon.blockchain.repository.WalletRepository;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.UUID;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,18 +24,24 @@ import lombok.extern.slf4j.Slf4j;
 public class WalletService {
 
     private final WalletRepository walletRepository;
-//    private final TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
+    private final SmartContractRepository smartContractRepository;
     private final MarketDataService marketDataService;
+    private final SmartContractEvaluationService contractEvaluationService;
+    private static final Logger log = LoggerFactory.getLogger(WalletService.class);
 
     public WalletService(WalletRepository walletRepository, 
-//                         TransactionRepository transactionRepository,
-                         MarketDataService marketDataService
-//            ,
+                         TransactionRepository transactionRepository,
+                         MarketDataService marketDataService,
+                         @Lazy SmartContractEvaluationService contractEvaluationService,
+                         SmartContractRepository smartContractRepository
 //                         BlockchainService blockchainService
     ) {
         this.walletRepository = walletRepository;
-//        this.transactionRepository = transactionRepository;
+        this.transactionRepository = transactionRepository;
         this.marketDataService = marketDataService;
+        this.contractEvaluationService = contractEvaluationService;
+        this.smartContractRepository = smartContractRepository;
     }
 
     public Optional<Wallet> getWalletByUserId(Long userId) {
@@ -46,6 +50,10 @@ public class WalletService {
 
     public Optional<Wallet> getWalletByAddress(String address) {
         return walletRepository.findByAddress(address);
+    }
+
+    public Optional<Wallet> getWalletById(Long id) {
+        return walletRepository.findById(id);
     }
 
     @Transactional
@@ -74,8 +82,8 @@ public class WalletService {
      * El dinero fiat no vale para comprar tokens
      * Cuando se intercambia USDT por cualquier moneda, no se añade USDT a los assets de otras monedas
      */
-/*    @Transactional
-    public String buyAsset(Long userId, String symbol, double quantity) {
+    @Transactional
+    public String buyAsset(Long userId, String symbol, double quantity) throws IOException, InterruptedException {
         Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
         Optional<Wallet> liquidityWalletOpt = walletRepository.findByAddress("LP-" + symbol);
         Optional<Wallet> usdtLiquidityWalletOpt = walletRepository.findByAddress("LP-USDT");
@@ -83,11 +91,13 @@ public class WalletService {
         if (optionalWallet.isEmpty()) return "❌ Wallet not found!";
         if (liquidityWalletOpt.isEmpty()) return "❌ Liquidity pool for " + symbol + " not found!";
         if (usdtLiquidityWalletOpt.isEmpty()) return "❌ Liquidity pool for USDT not found!";
-    
+
         Wallet userWallet = optionalWallet.get();
         Wallet liquidityWallet = liquidityWalletOpt.get();
         Wallet usdtLiquidityWallet = usdtLiquidityWalletOpt.get();
-    
+
+        if (checkNotValidContract(liquidityWallet)) throw new TransactionBlockedException(symbol);
+
         double price = marketDataService.fetchLivePriceForAsset(symbol);
         double totalCost = quantity * price;
     
@@ -130,12 +140,11 @@ public class WalletService {
         return "✅ Asset purchased successfully!";
     }
 
-
-     * La venta siempre se hace por USDT
-     * Los usuarios después pueden cambiar USDT por la moneda fiat
+/*     * La venta siempre se hace por USDT
+     * Los usuarios después pueden cambiar USDT por la moneda fiat*/
 
     @Transactional
-    public String sellAsset(Long userId, String symbol, double quantity) {
+    public String sellAsset(Long userId, String symbol, double quantity) throws IOException, InterruptedException {
         Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
         Optional<Wallet> liquidityWalletOpt = walletRepository.findByAddress("LP-" + symbol);
     
@@ -144,6 +153,8 @@ public class WalletService {
     
         Wallet userWallet = optionalWallet.get();
         Wallet liquidityWallet = liquidityWalletOpt.get();
+
+        if (checkNotValidContract(liquidityWallet)) throw new TransactionBlockedException(symbol);
     
         double price = marketDataService.fetchLivePriceForAsset(symbol);
         double totalRevenue = quantity * price;
@@ -196,8 +207,8 @@ public class WalletService {
         return "✅ Asset sold successfully!";
     }
 
-
-     * Esta versión ya no almacena purchasePrice en Assets
+/*
+     * Esta versión ya no almacena purchasePrice en Assets*/
 
     private void updateWalletAssets(Wallet wallet, String assetSymbol, double amount) {
         Optional<Asset> assetOpt = wallet.getAssets().stream()
@@ -219,7 +230,8 @@ public class WalletService {
         }
     }     
 
-    private void recordTransaction(Wallet sender, Wallet receiver, String assetSymbol, double quantity, double price, String type) {
+    private void recordTransaction(Wallet sender, Wallet receiver, String assetSymbol,
+                                   double quantity, double price, String type) {
         Transaction transaction = new Transaction(
             null,             // id (se genera automáticamente)
             sender,           // senderWallet
@@ -235,7 +247,7 @@ public class WalletService {
         );
         
         transactionRepository.save(transaction);
-    }*/
+    }
     
         public String createWalletForUser(User user) {
         Optional<Wallet> existingWallet = walletRepository.findByUserId(user.getId());
@@ -258,11 +270,15 @@ public class WalletService {
         return DigestUtils.sha256Hex(UUID.randomUUID().toString());
     }
 
+    private boolean checkNotValidContract(Wallet wallet){
+        Optional<SmartContract> contract = smartContractRepository.findById(wallet.getId());
+        return contract.filter(contractEvaluationService::verifyContractSignature).isEmpty();
+    }
 
-/*    // Ejecuto esta función para tener patrimonios de carteras actualizados continuamente y que no contenga valores estáticos
+    // Ejecuto esta función para tener patrimonios de carteras actualizados continuamente y que no contenga valores estáticos
     @Scheduled(fixedRate = 30000) // Se ejecuta cada 30 segundos
     @Transactional
-    public void updateWalletBalancesScheduled() {
+    public void updateWalletBalancesScheduled() throws IOException, InterruptedException {
         log.info("🔄 Updating wallet net worths based on live market prices...");
     
         List<Wallet> wallets = walletRepository.findAll();
@@ -300,7 +316,7 @@ public class WalletService {
         log.info("✅ All wallet net worths updated successfully!");
     }
     
-    public Map<String, Object> getWalletBalance(Long userId) {
+    public Map<String, Object> getWalletBalance(Long userId) throws IOException, InterruptedException {
         Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
     
         if (optionalWallet.isEmpty()) {
@@ -329,10 +345,10 @@ public class WalletService {
         return walletInfo;
     }
     
-    *
+/*    *
      * Devuelve un mapa con dos listas de transacciones:
      * - "sent": transacciones enviadas (donde la wallet es remitente)
-     * - "received": transacciones recibidas (donde la wallet es destinataria)
+     * - "received": transacciones recibidas (donde la wallet es destinataria)*/
 
     public Map<String, List<Transaction>> getWalletTransactions(Long walletId) {
         Optional<Wallet> walletOpt = walletRepository.findById(walletId);
@@ -348,7 +364,7 @@ public class WalletService {
         return result;
     }
 
-    // RETO BACKEND
+/*    // RETO BACKEND
 
     // Método para transferir el fee: deducirlo del wallet del emisor y sumarlo a la wallet de fees.
     public void transferFee(Transaction tx, double fee) {
