@@ -19,8 +19,6 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Wallet> wallets;
 
     public User() {
     }
@@ -86,14 +84,6 @@ public class User implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<Wallet> getWallets() {
-        return wallets;
-    }
-
-    public void setWallets(List<Wallet> wallets) {
-        this.wallets = wallets;
     }
 
     @Override
