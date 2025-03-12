@@ -1,19 +1,15 @@
-/*package com.hackathon.blockchain.service;
+package com.hackathon.blockchain.service;
 
 import com.hackathon.blockchain.model.SmartContract;
-import com.hackathon.blockchain.model.Transaction;
 import com.hackathon.blockchain.repository.SmartContractRepository;
 import com.hackathon.blockchain.repository.TransactionRepository;
 import com.hackathon.blockchain.utils.SignatureUtil;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.expression.Expression;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.security.PublicKey;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SmartContractEvaluationService {
@@ -32,12 +28,12 @@ public class SmartContractEvaluationService {
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
         this.walletKeyService = walletKeyService;
-    }*/
-    
-    /**
+    }
+
+/**
      * Verifica la firma digital del contrato usando la clave pública del emisor.
      */
-/*    public boolean verifyContractSignature(SmartContract contract) {
+    public boolean verifyContractSignature(SmartContract contract) {
         try {
             PublicKey issuerPublicKey = walletKeyService.getPublicKeyForWallet(contract.getIssuerWalletId());
             if (issuerPublicKey == null) {
@@ -53,7 +49,7 @@ public class SmartContractEvaluationService {
             e.printStackTrace();
             return false;
         }
-    }*/
+    }
     
     /**
      * Evalúa todos los smart contracts activos sobre las transacciones pendientes.
@@ -130,4 +126,4 @@ public class SmartContractEvaluationService {
     //         }
     //     }
     // }
-//}
+}
