@@ -11,7 +11,7 @@ public class Asset {
     @Column(name = "purchase_price", nullable = false)
     private double purchasePrice;
     @Column(nullable = false)
-    private Long quantity;
+    private double quantity;
     @Column(nullable = false)
     private String symbol;
 
@@ -19,7 +19,7 @@ public class Asset {
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
-    public Asset(Long id, String symbol, double purchasePrice, long quantity, Wallet wallet) {
+    public Asset(Long id, String symbol, double purchasePrice, double quantity, Wallet wallet) {
         this.id = id;
         this.purchasePrice = purchasePrice;
         this.quantity = quantity;
@@ -46,11 +46,11 @@ public class Asset {
         this.purchasePrice = purchasePrice;
     }
 
-    public long getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(long quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 
