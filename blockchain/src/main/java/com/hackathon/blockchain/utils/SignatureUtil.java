@@ -30,4 +30,17 @@ public class SignatureUtil {
         byte[] digitalSignature = signature.sign();
         return Base64.getEncoder().encodeToString(digitalSignature);
     }
+
+    public static String generate256SHAStr(String inputStr) throws NoSuchAlgorithmException {
+        byte[] messageBytes = getHashedMessage(inputStr);
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : messageBytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
 }
