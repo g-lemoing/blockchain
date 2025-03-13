@@ -68,4 +68,11 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("{\"message", "❌ Contract not found with id: " + e.getLocalizedMessage() + "}");
         return problemDetail;
     }
+
+    @ExceptionHandler(NoPendingTransactionsException.class)
+    public ProblemDetail handleNoPendingTransactionsException(NoPendingTransactionsException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), e.getMessage());
+        problemDetail.setProperty("{\"message", "❌ No pending transactions to mine. }");
+        return problemDetail;
+    }
 }
