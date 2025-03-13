@@ -1,12 +1,14 @@
 package com.hackathon.blockchain.model;
 
+import com.hackathon.blockchain.utils.SignatureUtil;
 import jakarta.persistence.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Entity
 @Table(name = "block")
-public class Block {
+public class Block implements Comparable<Block> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -18,8 +20,8 @@ public class Block {
     private long nonce;
     @Column(name = "previous_hash")
     private String previousHash;
-//    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
-//    List<Transaction> pendingTransactions;
+    @OneToMany(mappedBy = "block", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Transaction> pendingTransactions;
     private long timestamp;
 
     public long getId() {
@@ -70,13 +72,13 @@ public class Block {
         this.previousHash = previousHash;
     }
 
-//    public List<Transaction> getPendingTransactions() {
-//        return pendingTransactions;
-//    }
-//
-//    public void setPendingTransactions(List<Transaction> pendingTransactions) {
-//        this.pendingTransactions = pendingTransactions;
-//    }
+    public List<Transaction> getPendingTransactions() {
+        return pendingTransactions;
+    }
+
+    public void setPendingTransactions(List<Transaction> pendingTransactions) {
+        this.pendingTransactions = pendingTransactions;
+    }
 
     public long getTimestamp() {
         return timestamp;
@@ -84,5 +86,22 @@ public class Block {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String calculateHash() throws NoSuchAlgorithmException {
+        String concatenatedStr = concatenateString();
+        return SignatureUtil.generate256SHAStr(concatenatedStr);
+    }
+
+    public String concatenateString(){
+        return getBlockIndex() +
+                getPreviousHash() +
+                getNonce() +
+                getTimestamp();
+    }
+
+    @Override
+    public int compareTo(Block o) {
+        return (int) (this.getTimestamp() - o.getTimestamp());
     }
 }
