@@ -7,8 +7,6 @@ import com.hackathon.blockchain.repository.TransactionRepository;
 import com.hackathon.blockchain.repository.WalletRepository;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,6 @@ public class WalletService {
     private final SmartContractRepository smartContractRepository;
     private final MarketDataService marketDataService;
     private final SmartContractEvaluationService contractEvaluationService;
-    private static final Logger log = LoggerFactory.getLogger(WalletService.class);
 
     public WalletService(WalletRepository walletRepository, 
                          TransactionRepository transactionRepository,
