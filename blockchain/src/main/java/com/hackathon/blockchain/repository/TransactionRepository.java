@@ -9,4 +9,5 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findBySenderWallet(Wallet wallet);
     List<Transaction> findByReceiverWallet(Wallet wallet);
+    List<Transaction> findByStatus(String status);
 }
