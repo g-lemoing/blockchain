@@ -61,4 +61,11 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("{\"message", "❌ Transaction blocked by smart contract conditions for " + e.getLocalizedMessage() + "}");
         return problemDetail;
     }
+
+    @ExceptionHandler(ContractNotFoundException.class)
+    public ProblemDetail handleContractNotFoundException(ContractNotFoundException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), e.getMessage());
+        problemDetail.setProperty("{\"message", "❌ Contract not found with id: " + e.getLocalizedMessage() + "}");
+        return problemDetail;
+    }
 }
