@@ -1,11 +1,26 @@
-/*
 package com.hackathon.blockchain.service;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import com.hackathon.blockchain.exception.NoPendingTransactionsException;
+import com.hackathon.blockchain.model.Block;
+import com.hackathon.blockchain.model.Transaction;
+import com.hackathon.blockchain.repository.BlockRepository;
+import com.hackathon.blockchain.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.Comparator;
+import java.util.List;
+
+@Service
 public class BlockchainService {
+    @Autowired
+    private BlockRepository blockRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
-    public boolean isChainValid() {
+    public boolean isChainValid() throws NoSuchAlgorithmException {
         List<Block> chain = blockRepository.findAll(Sort.by(Sort.Direction.ASC, "blockIndex"));
 
         for (int i = 1; i < chain.size(); i++) {
@@ -29,4 +44,42 @@ public class BlockchainService {
         System.out.println("✅ Blockchain is valid");
         return true;
     }
-}*/
+
+    public Block[] getBlocks(){
+        List<Block> blockList = blockRepository.findAll();
+        return blockList.toArray(new Block[0]);
+    }
+
+    public Block newBlock(){
+        List<Transaction> pendingTransactions = transactionRepository.findByStatus("PENDING");
+        if(pendingTransactions.isEmpty()) throw new NoPendingTransactionsException();
+        long index = blockRepository.count();
+        Block previousBlock = blockRepository.findAll()
+                .stream().max(Comparator.comparing(Block::getTimestamp)).get();
+        String previousHash = previousBlock.getHash();
+
+        Block block = new Block();
+        block.setBlockIndex(index);
+        block.setPendingTransactions(pendingTransactions);
+        block.setPreviousHash(previousHash);
+        return block;
+    }
+
+    public String mineBlock() throws NoSuchAlgorithmException {
+        final String hashStartsWith = "0000";
+        // Get block
+        Block block = newBlock();
+        long nonce = 0;
+        String hashStr = "";
+
+        while (!block.getHash().startsWith(hashStartsWith)) {
+            block.setNonce(nonce);
+            hashStr = block.calculateHash();
+            nonce++;
+        }
+        
+        block.setHash(hashStr);
+        blockRepository.save(block);
+        return hashStr;
+    }
+}
