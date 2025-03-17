@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -75,4 +76,12 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("{\"message", "❌ No pending transactions to mine. }");
         return problemDetail;
     }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ProblemDetail handleNoSuchElementException(NoSuchElementException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), e.getMessage());
+        problemDetail.setProperty("{\"message", "❌ Element not found. }");
+        return problemDetail;
+    }
+
 }
