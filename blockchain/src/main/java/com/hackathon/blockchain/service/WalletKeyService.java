@@ -71,7 +71,7 @@ public class WalletKeyService {
         try (FileOutputStream fos = new FileOutputStream(publicKeyPath.toFile())) {
             fos.write(publicKeyPEM.getBytes());
         }
-        
+
          // Crear y guardar la entidad WalletKey en la BD
         WalletKey walletKey = new WalletKey();
         walletKey.setWallet(wallet);
