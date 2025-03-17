@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -50,12 +51,10 @@ public class BlockchainService {
         return blockList.toArray(new Block[0]);
     }
 
-    public Block newBlock(){
-        List<Transaction> pendingTransactions = transactionRepository.findByStatus("PENDING");
-        if(pendingTransactions.isEmpty()) throw new NoPendingTransactionsException();
+    public Block newBlock(List<Transaction> pendingTransactions){
         long index = blockRepository.count();
         Block previousBlock = blockRepository.findAll()
-                .stream().max(Comparator.comparing(Block::getTimestamp)).get();
+                .stream().max(Comparator.comparing(Block::getTimestamp)).orElseThrow();
         String previousHash = previousBlock.getHash();
 
         Block block = new Block();
@@ -65,21 +64,41 @@ public class BlockchainService {
         return block;
     }
 
-    public String mineBlock() throws NoSuchAlgorithmException {
+    public String mineTransactions() throws NoSuchAlgorithmException {
+        List<Transaction> pendingTransactions = transactionRepository.findByStatus("PENDING");
+        if(pendingTransactions.isEmpty()) throw new NoPendingTransactionsException();
+
+        // Difficulty hash level = 4
         final String hashStartsWith = "0000";
-        // Get block
-        Block block = newBlock();
+
+        Block currentBlock = newBlock(pendingTransactions);
+        Block block = mineBlock(currentBlock, hashStartsWith);
+
+        block.setGenesis(false);
+        block.setTimestamp(new Date().getTime());
+        updateTransactions(block.getPendingTransactions(), "MINED");
+        blockRepository.save(block);
+        return block.getHash();
+    }
+
+    public Block mineBlock(Block block, String hashStartsWithDifficulty)
+            throws NoSuchAlgorithmException {
         long nonce = 0;
         String hashStr = "";
 
-        while (!block.getHash().startsWith(hashStartsWith)) {
+        while (!block.getHash().startsWith(hashStartsWithDifficulty)) {
             block.setNonce(nonce);
             hashStr = block.calculateHash();
+            block.setHash(hashStr);
             nonce++;
         }
-        
-        block.setHash(hashStr);
-        blockRepository.save(block);
-        return hashStr;
+        return block;
+    }
+
+    public void updateTransactions(List<Transaction> transactions, String newStatus){
+        for(Transaction transaction : transactions){
+            transaction.setStatus(newStatus);
+            transactionRepository.save(transaction);
+        }
     }
 }
