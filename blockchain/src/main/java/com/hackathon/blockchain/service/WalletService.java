@@ -228,13 +228,13 @@ public class WalletService {
     }     
 
     private void recordTransaction(Wallet sender, Wallet receiver, String assetSymbol,
-                                   double quantity, double price, String type) {
+                                   double amount, double price, String type) {
         Transaction transaction = new Transaction(
             null,             // id (se genera automáticamente)
             sender,           // senderWallet
             receiver,         // receiverWallet
             assetSymbol,      // assetSymbol
-            quantity,         // amount
+            amount,         // amount
             price,            // pricePerUnit
             type,             // type
             new Date(),       // timestamp
@@ -361,7 +361,7 @@ public class WalletService {
         return result;
     }
 
-/*    // RETO BACKEND
+    // RETO BACKEND
 
     // Método para transferir el fee: deducirlo del wallet del emisor y sumarlo a la wallet de fees.
     public void transferFee(Transaction tx, double fee) {
@@ -392,5 +392,5 @@ public class WalletService {
         // Al no estar asociada a un usuario, se deja user en null
         walletRepository.save(feeWallet);
         return "Fee wallet created successfully with address: " + feeWalletAddress;
-    }*/
+    }
 }
