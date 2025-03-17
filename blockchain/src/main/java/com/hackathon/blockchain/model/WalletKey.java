@@ -9,7 +9,7 @@ public class WalletKey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    @PrimaryKeyJoinColumn()
+    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
     private Wallet wallet;
     @Column(name = "public_key", length = 512, nullable = false)
     private String publicKey;
@@ -17,6 +17,14 @@ public class WalletKey {
     private String privateKey;
 
     public WalletKey() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Wallet getWallet() {
