@@ -1,8 +1,6 @@
-/*
 package com.hackathon.blockchain.controller;
 
 import com.hackathon.blockchain.model.User;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,4 +19,4 @@ public class DashboardController {
         return "Welcome to your dashboard, " + user.getUsername() + "!\n" +
                "Your registered email is: " + user.getEmail();
     }
-}*/
+}
