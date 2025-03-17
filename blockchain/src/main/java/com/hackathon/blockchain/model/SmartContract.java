@@ -14,6 +14,7 @@ public class SmartContract {
     private String name;
     private String conditionExpression;
     private String action;
+    private String status;
     private double actionValue;
     @Column(name = "digital_signature", length = 512)
     private String digitalSignature;
