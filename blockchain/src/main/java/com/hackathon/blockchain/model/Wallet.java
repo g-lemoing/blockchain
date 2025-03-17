@@ -1,8 +1,8 @@
 package com.hackathon.blockchain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,7 +25,12 @@ public class Wallet {
     private User user;
 
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Asset> assets;
+
+    @OneToOne(mappedBy = "wallet", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private WalletKey walletKey;
 
     public Wallet() {
     }
@@ -54,22 +59,6 @@ public class Wallet {
         this.address = address;
     }
 
-    public Double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Double balance) {
-        this.balance = balance;
-    }
-
-    public Double getNetWorth() {
-        return netWorth;
-    }
-
-    public void setNetWorth(Double netWorth) {
-        this.netWorth = netWorth;
-    }
-
     public User getUser() {
         return user;
     }
@@ -84,5 +73,29 @@ public class Wallet {
 
     public void setAssets(List<Asset> assets) {
         this.assets = assets;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setNetWorth(double netWorth) {
+        this.netWorth = netWorth;
+    }
+
+    public double getNetWorth() {
+        return netWorth;
+    }
+
+    public WalletKey getWalletKey() {
+        return walletKey;
+    }
+
+    public void setWalletKey(WalletKey walletKey) {
+        this.walletKey = walletKey;
     }
 }
