@@ -5,6 +5,7 @@ import com.hackathon.blockchain.model.WalletKey;
 import com.hackathon.blockchain.repository.WalletKeyRepository;
 import com.hackathon.blockchain.utils.PemUtil;
 import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,8 +28,9 @@ public class WalletKeyService {
     private final WalletKeyRepository walletKeyRepository;
     private final File dir;
 
-    public WalletKeyService(WalletKeyRepository walletKeyRepository) throws IOException {
+    public WalletKeyService(WalletKeyRepository walletKeyRepository) {
         this.walletKeyRepository = walletKeyRepository;
+
         // Asegurarse de que la carpeta /keys exista
         dir = new File(KEYS_FOLDER);
         if (!dir.exists()) {
@@ -69,8 +71,8 @@ public class WalletKeyService {
         try (FileOutputStream fos = new FileOutputStream(publicKeyPath.toFile())) {
             fos.write(publicKeyPEM.getBytes());
         }
-
-        // Crear y guardar la entidad WalletKey en la BD
+        
+         // Crear y guardar la entidad WalletKey en la BD
         WalletKey walletKey = new WalletKey();
         walletKey.setWallet(wallet);
         walletKey.setPublicKey(publicKeyPEM);
