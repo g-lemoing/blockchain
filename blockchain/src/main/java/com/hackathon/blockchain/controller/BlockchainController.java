@@ -19,8 +19,8 @@ public class BlockchainController {
 
     @PostMapping("/mine")
     public ResponseEntity<String> mineTransactions() throws NoSuchAlgorithmException {
-        String hash= blockchainService.mineBlock();
-        return ResponseEntity.ok(hash);
+        String hash= blockchainService.mineTransactions();
+        return ResponseEntity.ok("{\"message\": \"Block mined: " + hash + "\"}");
     }
 
     @GetMapping("/")
