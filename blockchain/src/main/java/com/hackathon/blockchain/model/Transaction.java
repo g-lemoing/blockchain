@@ -11,7 +11,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String assetSymbol;
-    private double quantity;
+    private double amount;
     private double price;
     private String type;
     private String status;
@@ -27,10 +27,10 @@ public class Transaction {
     @JoinColumn(name = "sender_wallet_id", nullable = false)
     private Wallet senderWallet;
 
-    public Transaction(Long id, Wallet sender, Wallet receiver, String assetSymbol, double quantity,
+    public Transaction(Long id, Wallet sender, Wallet receiver, String assetSymbol, double amount,
                        double price, String type, Date timeStamp, String status, double fee, Block block) {
         this.assetSymbol = assetSymbol;
-        this.quantity = quantity;
+        this.amount = amount;
         this.price = price;
         this.type = type;
         this.timeStamp = timeStamp;
@@ -65,12 +65,12 @@ public class Transaction {
         this.assetSymbol = assetSymbol;
     }
 
-    public double getQuantity() {
-        return quantity;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public double getPrice() {
