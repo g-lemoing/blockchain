@@ -7,7 +7,6 @@ import com.hackathon.blockchain.service.SmartContractService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +32,7 @@ public class SmartContractController {
     }
 
     @GetMapping("/validate/{id}")
-    public ResponseEntity<String> validateContract(@Valid @PathVariable long id)
-            throws NoSuchAlgorithmException, IOException, SignatureException, InvalidKeyException {
+    public ResponseEntity<String> validateContract(@Valid @PathVariable long id) {
         String response = smartContractService.isContractValid(id) ? "valid" : "invalid";
         response = "{\"message\": \"Smart contract is " + response +"\"}";
         return ResponseEntity.ok(response);
