@@ -3,8 +3,6 @@ package com.hackathon.blockchain.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "smart_contract")
@@ -19,7 +17,7 @@ public class SmartContract {
     private double actionValue;
     @Column(name = "digital_signature", length = 512)
     private String digitalSignature;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "issuer_wallet_id", referencedColumnName = "id")
     @JsonIgnore
     private Wallet wallet;
